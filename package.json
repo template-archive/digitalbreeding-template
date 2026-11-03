@@ -15,7 +15,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json",
     "preview": "vite preview",
     "sync:feedback-templates": "node scripts/sync-feedback-templates.mjs",
-    "test:feedback": "node --test tests/feedback.test.mjs tests/feedback-server.test.mjs tests/feedback-api.test.mjs tests/feedback-review.test.mjs tests/feedback-templates.test.mjs tests/auth-mailer.test.mjs tests/http.test.mjs tests/rate-limit.test.mjs tests/auth-domain.test.mjs"
+    "test:feedback": "node --test tests/feedback.test.mjs tests/feedback-server.test.mjs tests/feedback-api.test.mjs tests/feedback-review.test.mjs tests/feedback-templates.test.mjs tests/auth-mailer.test.mjs tests/http.test.mjs tests/rate-limit.test.mjs tests/auth-domain.test.mjs tests/auth-store.test.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.2.0",
