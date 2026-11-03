@@ -1,13 +1,13 @@
 import { neon } from '@neondatabase/serverless'
-import { createHash } from 'node:crypto'
 import { parseFeedback, type FeedbackData } from '../src/features/feedback/model.ts'
 import type { FeedbackAction } from '../src/features/feedback/protocol.ts'
 import { applyAction, FeedbackError } from './feedback-domain.ts'
+import { countHit, RATE_LIMIT_TABLE, type RateWindow } from './rate-limit.ts'
 
 export const SCHEMA = [
   "SELECT pg_advisory_xact_lock(74190831)",
   "CREATE TABLE IF NOT EXISTS feedback_pages (scope text NOT NULL, template text NOT NULL, revision bigint NOT NULL DEFAULT 0, data jsonb NOT NULL, updated_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(scope, template))",
-  "CREATE TABLE IF NOT EXISTS feedback_rate_limits (bucket text PRIMARY KEY, window_start timestamptz NOT NULL, hits integer NOT NULL)",
+  RATE_LIMIT_TABLE,
 ]
 let initialized: Promise<void> | undefined
 function sqlClient() {
@@ -25,17 +25,9 @@ async function ready() {
   }
   await initialized
 }
-export async function limitRequests(key: string, limit: number) {
+export async function limitRequests(key: string, limit: number, window: RateWindow = 'minute') {
   await ready()
-  const sql = sqlClient()
-  const bucket = createHash('sha256').update(scope() + ':' + key).digest('hex')
-  const rows = await sql.query(
-    "INSERT INTO feedback_rate_limits(bucket, window_start, hits) VALUES($1, date_trunc('minute', now()), 1) ON CONFLICT(bucket) DO UPDATE SET window_start = date_trunc('minute', now()), hits = CASE WHEN feedback_rate_limits.window_start = date_trunc('minute', now()) THEN feedback_rate_limits.hits + 1 ELSE 1 END RETURNING hits",
-    [bucket],
-  )
-  if (Number(rows[0].hits) > limit) throw new FeedbackError(429, '요청이 많습니다. 잠시 후 다시 시도해 주세요.')
-  // Only hashed buckets are stored, and inactive buckets are removed after a day.
-  if (Math.random() < .02) await sql.query("DELETE FROM feedback_rate_limits WHERE window_start < now() - interval '1 day'")
+  if (await countHit(sqlClient(), scope(), key, window) > limit) throw new FeedbackError(429, '요청이 많습니다. 잠시 후 다시 시도해 주세요.')
 }
 export async function readSharedFeedback(template: string): Promise<{ data: FeedbackData; revision: number }> {
   await ready()
