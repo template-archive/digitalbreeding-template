@@ -3,7 +3,13 @@
 ## 배포
 Node.js 24에서 `npm ci`, `npm run build`를 실행합니다. `prebuild`가 `public/downloads`에 33종의 스타터 ZIP·목업 JSON·JSON Schema·적용 가이드를 생성하고, Vite가 이를 `dist/downloads`에 포함합니다. 생성물이 없으면 빌드 단계가 실패하므로 다운로드 없는 페이지를 배포하지 않습니다. 개발 서버도 `predev`에서 같은 파일을 준비합니다.
 
-Vercel 등에서는 Vite 프로젝트, 빌드 명령 `npm run build`, 결과 디렉터리 `dist`를 사용합니다. Node 버전은 `package.json`의 `24.x`를 따릅니다. 루트·미리보기·운영 도메인과 **다운로드 URL 모두** 사내 접근 정책에 맞게 보호한 뒤 공유하세요. 이 작업에는 로그인이나 사내 SSO 설정이 포함되지 않습니다.
+Vercel 등에서는 Vite 프로젝트, 빌드 명령 `npm run build`, 결과 디렉터리 `dist`를 사용합니다. Node 버전은 `package.json`의 `24.x`를 따릅니다.
+
+### 접근 범위(2026-11-04 기준)
+운영 사이트는 **공개**입니다. 템플릿 보기·다운로드·피드백·작업 요청 목록은 누구나 쓰고, **요청 만들기만** 허브 로그인(허용 메일 도메인의 직원, 메일 코드)이 필요합니다. 설정은 `docs/hub-auth.md`를 따릅니다. 저장소도 공개이므로 회사 이름·메일 도메인·고객 정보를 코드·문서·이슈·커밋 작성자에 쓰지 않습니다. 미리보기 배포는 Vercel Deployment Protection(Standard Protection, Vercel Authentication)으로 보호된 상태를 유지합니다.
+
+### (이전 방식) 사이트 전체를 Vercel로 보호할 때
+아래는 사이트 전체를 사내 전용으로 막던 이전 방식의 기록입니다. 지금은 쓰지 않습니다.
 
 ### Vercel 접근 제한 적용 전 확인
 저장소의 `vercel.json`은 빌드와 결과 디렉터리만 설정합니다. 파일을 추가하거나 배포하는 것만으로 접근 제한이 활성화되지 않습니다.
