@@ -1,6 +1,8 @@
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig, loadEnv } from 'vite'
 import { handleFeedback } from './server/feedback-handler.ts'
+import { handleAuth } from './server/auth/handler.ts'
+import { copyServerEnv } from './server/env.ts'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
@@ -14,8 +16,10 @@ export default defineConfig({
     name: 'shared-template-feedback',
     configureServer(server) {
       const env = loadEnv(server.config.mode, server.config.root, '')
-      process.env.DATABASE_URL ||= env.DATABASE_URL || env.POSTGRES_URL
+      // 서버 전용 값(VITE_ 접두사 없음). 로그인은 SMTP 없이 두면 코드를 터미널에 출력한다.
+      copyServerEnv(process.env, env, ['DATABASE_URL', 'POSTGRES_URL', 'AUTH_ALLOWED_DOMAINS', 'AUTH_SECRET', 'AUTH_DATABASE_URL', 'SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS', 'MAIL_FROM', 'MAIL_FROM_NAME'])
       server.middlewares.use('/api/feedback', (request, response) => { void handleFeedback(request, response) })
+      server.middlewares.use('/api/auth', (request, response) => { void handleAuth(request, response) })
     },
   }],
   resolve: {
