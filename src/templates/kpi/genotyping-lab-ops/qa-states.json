@@ -1,0 +1,4 @@
+[
+  { "name": "alert-plate-open", "note": "경보 플레이트를 펼친 샘플 행(기본은 접힘, 가장 긴 원인 문구)", "steps": [{ "click": "경보 플레이트 펼치기" }, { "wait": 300 }, { "expect": "td table" }] },
+  { "name": "unresolved-filter", "note": "미해결 필터: 모든 플레이트가 잠긴 채 펼쳐짐", "steps": [{ "click": "미해결" }, { "wait": 300 }, { "expect": "button[aria-expanded=\"true\"][disabled]" }] }
+]

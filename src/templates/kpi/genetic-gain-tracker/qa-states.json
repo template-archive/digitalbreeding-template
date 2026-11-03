@@ -1,0 +1,28 @@
+[
+  {
+    "name": "blast-selected",
+    "note": "형질 이름이 가장 긴 상관 반응(패널 비바람직 태그 + 선 추세)",
+    "steps": [
+      {
+        "click": "잎도열병 발병 지수 비바람직"
+      },
+      {
+        "wait": 500,
+        "expect": "svg[aria-label^=\"연도별 상관 반응\"]"
+      }
+    ]
+  },
+  {
+    "name": "taste-selected",
+    "note": "음수 상관 반응(선 추세 음수 구간)",
+    "steps": [
+      {
+        "click": "식미치 비바람직"
+      },
+      {
+        "wait": 500,
+        "expect": "svg[aria-label^=\"연도별 상관 반응\"]"
+      }
+    ]
+  }
+]

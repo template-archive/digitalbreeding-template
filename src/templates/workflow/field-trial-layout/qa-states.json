@@ -1,0 +1,57 @@
+[
+  {
+    "name": "plot110-outlier",
+    "note": "경보(이상치) 단계 대표이자 가장 긴 구 상세: 결측·이상치 목록에서 구 110(수량 248.0)을 골라 「수량 이상치 — 허용 범위(300~800 kg/10a) 미만 — 메모: 참새 피해. 평균·CV·색 척도·공간 경향 계산에서 제외했습니다」 상자가 붙는다. 1280px 미만은 시트(390)·서랍(768)으로 열린다",
+    "steps": [
+      {
+        "click": "구 110 · 수량 248.0 kg/10a"
+      },
+      {
+        "expect": "[data-plot-issue='110-yield']"
+      }
+    ]
+  },
+  {
+    "name": "missing-review",
+    "note": "주의(결측) 단계 대표: 표시 모드 「결측 구」(스테퍼 ⑤ 자료 검토와 같은 보기)로 바꿔 결측 빗금·이상치 점선 범례와 흐린 격자가 나온다",
+    "steps": [
+      {
+        "clickSelector": "[aria-label='표시 모드'] [role=radio]:has-text('결측 구')"
+      },
+      {
+        "expect": "[data-legend='missing']"
+      }
+    ]
+  },
+  {
+    "name": "heatmap-trend",
+    "note": "도구 막대가 가장 넓어지는 상태(형질·값 Segmented가 추가)와 가장 긴 범례 문구(공간 경향 3×3 이동 평균 잔차): 표현형 히트맵 → 공간 경향",
+    "steps": [
+      {
+        "clickSelector": "[aria-label='표시 모드'] [role=radio]:has-text('표현형 히트맵')"
+      },
+      {
+        "clickSelector": "[aria-label='값 종류'] [role=radio]:has-text('공간 경향')"
+      },
+      {
+        "expect": "[data-legend='heatmap-yield-trend']"
+      }
+    ]
+  },
+  {
+    "name": "memo-dirty",
+    "note": "메모 저장 문법: 구 메모를 고치면 1440은 화면 아래 공통 SaveBar(변경 취소·메모 저장), 390·768은 시트·서랍 아래 줄에 저장이 나온다. 저장은 누르지 않는다",
+    "steps": [
+      {
+        "click": "구 110 · 수량 248.0 kg/10a"
+      },
+      {
+        "fill": "[data-field='memo']",
+        "value": "참새 피해. 방조망 보수 필요"
+      },
+      {
+        "expect": "[data-action='save']:not([disabled])"
+      }
+    ]
+  }
+]

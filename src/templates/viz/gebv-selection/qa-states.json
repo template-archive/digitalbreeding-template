@@ -1,0 +1,20 @@
+[
+  {
+    "name": "index-mode",
+    "note": "다형질 지수 모드: 가중치 패널, 등고선 끝 라벨, 지수 기준 문구",
+    "steps": [
+      { "click": "다형질 선발 지수" },
+      { "wait": 300 },
+      { "expect": "[role=\"radio\"][aria-checked=\"true\"]:has-text(\"다형질 선발 지수\")" }
+    ]
+  },
+  {
+    "name": "row-detail",
+    "note": "순위 표 행 선택: 넓은 화면 계통 상세, 390px 하단 시트",
+    "steps": [
+      { "clickSelector": "tr[aria-selected=\"false\"]:has-text(\"YR20-2649\")" },
+      { "wait": 200 },
+      { "expect": "tr[aria-selected=\"true\"]" }
+    ]
+  }
+]

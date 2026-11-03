@@ -1,0 +1,3 @@
+[
+  { "name": "alert-goto-apps", "note": "경보 항목을 눌러 출원 영역으로 이동(선택 표시 링)", "steps": [{ "clickSelector": "ul[aria-label$=\"목표 미달 지표 5건\"] button:has-text(\"신품종 출원\")" }, { "wait": 200 }, { "expect": "#po-apps.select-ring" }] }
+]

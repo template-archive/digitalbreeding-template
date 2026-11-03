@@ -1,0 +1,22 @@
+[
+  {
+    "name": "pt26-06-selected",
+    "note": "불합격 PT26-06 행 선택: 이형립 4개(혼입형 1·교잡형 3) 상세 표와 메모가 붙는 가장 긴 상세",
+    "steps": [{ "clickSelector": "[data-purity-id='PT26-06']" }, { "expect": "[data-purity-detail='PT26-06']" }]
+  },
+  {
+    "name": "year-2025",
+    "note": "2025 전환: 5건 모두 합격(PT25-02 합격(한계)), 상세 선택 해제",
+    "steps": [{ "click": "2025년" }, { "expect": "[data-purity-id='PT25-01']" }]
+  },
+  {
+    "name": "id-only",
+    "note": "ID 마커만 켬: 행렬 척도 0~5, 식별 곤란 8쌍 문구, 기능 마커 열 흐리게",
+    "steps": [{ "clickSelector": "[role='switch']" }, { "expect": "[data-id-only='true']" }]
+  },
+  {
+    "name": "pt26-04-selected",
+    "note": "PT26-04 행 선택: 재분석 11립 목록이 붙는 가장 긴 재분석 줄(합격(한계))",
+    "steps": [{ "clickSelector": "[data-purity-id='PT26-04']" }, { "expect": "[data-purity-recheck='11']" }]
+  }
+]

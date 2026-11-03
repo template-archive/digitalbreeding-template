@@ -1,0 +1,304 @@
+@import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
+@import 'tailwindcss';
+@import './design-system/tokens.css';
+
+/*
+ * 토큰 → Tailwind 유틸리티 연결.
+ * 값은 tokens.css(레이어 밖)가 결정한다. 여기 값은 Tailwind가 클래스를 만들게 하는 자리표시자이며,
+ * 생성되는 유틸리티는 var(--color-*)를 참조하므로 다크 모드 토큰 교체가 그대로 반영된다.
+ */
+@theme {
+  --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo',
+    'Noto Sans KR', 'Malgun Gothic', sans-serif;
+
+  --color-bg: #f4f5f7;
+  --color-surface: #ffffff;
+  --color-surface-2: #eef0f3;
+  --color-border: #dde1e7;
+  --color-text: #1a1f29;
+  --color-muted: var(--color-text-muted);
+  --color-accent: #3c4fd0;
+  --color-accent-contrast: #ffffff;
+  --color-primary: #1d1f20;
+  --color-primary-contrast: #ffffff;
+  --color-active: #e2e5ea;
+  --color-panel: #1d1f20;
+  --color-panel-ink: #ffffff;
+  --color-panel-muted: #c6ccd6;
+  --color-positive: #157347;
+  --color-negative: #b52e1c;
+  --color-warning: #975200;
+  --color-info: #1f5fbf;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --shadow-1: 0 1px 2px rgb(16 24 40 / 0.06);
+  --shadow-2: 0 4px 12px rgb(16 24 40 / 0.1), 0 1px 3px rgb(16 24 40 / 0.06);
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  padding: 12px 16px;
+  border-radius: 4px;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  transform: translateY(-160%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    background: var(--color-bg);
+    color: var(--color-text);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  /* 기본 border 색을 토큰으로 */
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-border);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  table,
+  .tabular-nums,
+  input[type='number'] {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/*
+ * 터치 변형(db-design-system visual-language 「상호작용」): 좁은 화면(< 640px) 또는 거친 포인터(터치).
+ * 예: `touch:h-11`, `touch:gap-4`. 데스크톱(넓은 화면 + 마우스)에서는 적용되지 않는다.
+ */
+@custom-variant touch {
+  @media (pointer: coarse), (max-width: 639px) {
+    @slot;
+  }
+}
+
+/*
+ * 누르는 영역 넓히기(보이는 크기는 그대로). 터치 조건에서만 ::after 투명 영역을 요소 가운데에 겹친다.
+ * - touch-hit: 가로·세로 모두 최소 44px(따로 떨어진 작은 버튼·아이콘 버튼·칩)
+ * - touch-hit-y: 세로만 최소 44px, 가로는 요소 폭(붙어 있는 Segmented 선택지처럼 옆과 겹치면 안 될 때)
+ * 라벨로 감싼 체크박스·라디오(label > input)는 라벨 전체가 누르는 영역이므로 라벨에 세로 44px 영역을 준다.
+ * 주의: 세로로 넘치는 ::after는 overflow 스크롤 컨테이너(가로 스크롤 줄 등) 안 맨 아래·위에 두면 세로 스크롤을 만들 수 있다.
+ */
+@layer components {
+  @media (pointer: coarse), (max-width: 639px) {
+    /*
+     * isolation + z-index −1: 넓힌 영역을 요소 자신의 내용(라벨 안 스위치 버튼·체크박스 등) 아래에 깐다.
+     * 위에 깔면 라벨의 ::after가 안쪽 버튼을 덮어 자동화 클릭(Playwright)이 '가로챔'으로 실패했다(variety-identity-markers 스위치).
+     */
+    .touch-hit,
+    .touch-hit-y,
+    label:has(> input[type='checkbox']),
+    label:has(> input[type='radio']) {
+      position: relative;
+      isolation: isolate;
+    }
+    .touch-hit::after,
+    .touch-hit-y::after,
+    label:has(> input[type='checkbox'])::after,
+    label:has(> input[type='radio'])::after {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      left: 50%;
+      top: 50%;
+      width: 100%;
+      height: max(100%, 44px);
+      transform: translate(-50%, -50%);
+    }
+    .touch-hit::after {
+      width: max(100%, 44px);
+    }
+    /*
+     * 가로 스크롤 줄(overflow-x-auto) 안의 작은 컨트롤: 넓힌 ::after가 세로로 넘쳐 세로 스크롤 막대가 생기지 않게 세로 넘침은 잘라낸다
+     * (overflow-x만 auto면 overflow-y도 auto로 계산된다). 세로 스크롤이 필요한 요소는 overflow-y-* 유틸리티를 함께 준다(유틸리티가 이긴다).
+     */
+    .overflow-x-auto {
+      overflow-y: hidden;
+    }
+  }
+
+  /*
+   * 데이터 위 선택 표시(HTML 칸·카드): 글자색 2.5px 안쪽 테두리 + 표면색 1.5px 안쪽 후광.
+   * 강조색은 범주 1색·순차 척도와 같은 파랑이라 데이터 위 선택에 쓰지 않는다(visual-language 「데이터 위 선택 표시」).
+   * box-shadow를 쓰므로 같은 요소에 shadow-* 유틸리티를 함께 두지 않는다.
+   */
+  .select-ring {
+    box-shadow:
+      inset 0 0 0 2.5px var(--color-text),
+      inset 0 0 0 4px var(--color-surface);
+  }
+
+  /*
+   * 갤러리 셸의 열림 움직임(피드백만): 메뉴 시트·README 패널이 열릴 때 200ms, transform·opacity만.
+   * prefers-reduced-motion이면 아래 전역 규칙이 길이를 0.01ms로 줄인다.
+   */
+  .gallery-sheet-in {
+    animation: gallery-sheet-in 240ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  }
+  .gallery-panel-in {
+    animation: gallery-panel-in 240ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  }
+  /* 목록 첫 화면 등장: 스크립트가 없어도 최종 상태가 보이도록 keyframes로만 숨긴다 */
+  .gallery-rise {
+    animation: gallery-rise 450ms cubic-bezier(0.23, 1, 0.32, 1) both;
+    animation-delay: var(--rise-delay, 0ms);
+  }
+  .gallery-state-in {
+    animation: gallery-state-in 180ms ease-out both;
+  }
+  .gallery-fade {
+    animation: gallery-fade 180ms ease-out both;
+  }
+}
+
+@keyframes gallery-rise {
+  from {
+    opacity: 0.01;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes gallery-state-in {
+  from {
+    opacity: 0.01;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes gallery-fade {
+  from {
+    opacity: 0.01;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes gallery-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes gallery-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  html,
+  body {
+    background: #ffffff;
+  }
+  * {
+    box-shadow: none !important;
+  }
+}
+
+/*
+ * 인쇄 캔버스 계약(db-design-system api-contract.md 참고)
+ * - ScaledCanvas에 print를 주면 마운트 동안 <html data-print-mode="canvas">가 켜진다.
+ * - 그때 [data-print-hide](갤러리 사이드바·상단 바·도구 줄·이전/다음, 템플릿이 숨길 요소)는 인쇄에서 빠지고,
+ *   [data-print-flat](캔버스를 감싼 갤러리 레이아웃 래퍼)은 여백·폭 제한을 잃는다.
+ * - [data-print-canvas="a4-landscape|a4-portrait"]는 용지 인쇄 폭(277mm / 190mm, 여백 10mm)에 맞춘다.
+ */
+@media print {
+  html[data-print-mode='canvas'],
+  html[data-print-mode='canvas'] body {
+    background: transparent !important;
+  }
+  html[data-print-mode='canvas'] [data-print-hide] {
+    display: none !important;
+  }
+  html[data-print-mode='canvas'] [data-print-flat] {
+    display: block !important;
+    position: static !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+  }
+  [data-print-canvas] {
+    max-width: none !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  [data-print-canvas],
+  [data-print-canvas] * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  [data-print-canvas='a4-landscape'] {
+    width: 277mm !important;
+  }
+  [data-print-canvas='a4-portrait'] {
+    width: 190mm !important;
+  }
+  [data-print-canvas] > [data-canvas-frame] {
+    min-width: 0 !important;
+  }
+  /* 인쇄 캔버스는 흰 종이: 템플릿이 캔버스에 준 bg-bg(회색)를 인쇄에서는 흰색으로. 토큰은 인쇄에서 늘 라이트(tokens.css) */
+  [data-print-canvas] > [data-canvas-frame] > [role='figure'] {
+    background-color: #ffffff !important;
+  }
+}

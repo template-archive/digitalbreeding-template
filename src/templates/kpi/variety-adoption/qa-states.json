@@ -1,0 +1,3 @@
+[
+  { "name": "province-variety", "note": "도별 보급률 품종별 누적 보기(범례 항목이 가장 많은 상태)", "steps": [{ "clickSelector": "[role=\"radio\"]:has-text(\"품종별\")" }, { "wait": 400 }, { "expect": "[role=\"radio\"][aria-checked=\"true\"]:has-text(\"품종별\")" }] }
+]

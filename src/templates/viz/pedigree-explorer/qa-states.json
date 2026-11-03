@@ -1,0 +1,7 @@
+[
+  {
+    "name": "gen5-detail",
+    "note": "가장 깊은 5세대(390은 세로 목록) + 공통 조상 상세 시트",
+    "steps": [{ "click": "5세대" }, { "wait": 200 }, { "clickSelector": "[data-loop-end=\"0\"]" }, { "expect": "[role=\"dialog\"]" }]
+  }
+]

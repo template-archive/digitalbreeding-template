@@ -1,0 +1,4 @@
+[
+  { "name": "kasp-focus", "note": "경보 목록 KASP 항목을 눌러 불릿 차트 KASP 행 강조(경보 문구·전망 105.0% 라벨)", "steps": [{ "click": "KASP 패널 연말 전망 105.0% · 211.5만 원 초과" }, { "wait": 600 }, { "expect": "li[data-item=\"kasp\"][data-active=\"true\"]" }] },
+  { "name": "plan-sorted", "note": "2027안 표 증감률 정렬 — 소계·합계 숨김 안내 문구(가장 긴 안내)", "steps": [{ "clickSelector": "th[aria-sort] button:has-text(\"증감률\")" }, { "wait": 300 }, { "expect": "th[aria-sort=\"descending\"]" }] }
+]

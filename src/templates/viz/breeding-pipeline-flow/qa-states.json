@@ -1,0 +1,6 @@
+[
+  { "name": "cohort-2023", "note": "출원 예정·2027 출원 검토 대기 노드, 출원 후보 표 4행(가장 긴 결과 문구)", "steps": [{ "clickSelector": "[data-cohort=\"2023\"]" }, { "wait": 400 }, { "expect": "[data-cohort=\"2023\"][aria-checked=\"true\"]" }] },
+  { "name": "cohort-2024", "note": "MET 1년차 진행 중 노드, 진급률 표 '진행 중' 배지", "steps": [{ "clickSelector": "[data-cohort=\"2024\"]" }, { "wait": 400 }, { "expect": "[data-cohort=\"2024\"][aria-checked=\"true\"]" }] },
+  { "name": "cohort-2025", "note": "AYT 진급 심의 대기(11-06) 노드, 생키 마지막 열 라벨 폭 확인", "steps": [{ "clickSelector": "[data-cohort=\"2025\"]" }, { "wait": 400 }, { "expect": "[data-cohort=\"2025\"][aria-checked=\"true\"]" }] },
+  { "name": "cohort-2026", "note": "PYT 진급 심의 대기(12월), 출원 후보 빈 상태 문구", "steps": [{ "clickSelector": "[data-cohort=\"2026\"]" }, { "wait": 400 }, { "expect": "[data-cohort=\"2026\"][aria-checked=\"true\"]" }] }
+]

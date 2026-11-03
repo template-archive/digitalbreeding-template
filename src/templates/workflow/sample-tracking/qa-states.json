@@ -1,0 +1,156 @@
+[
+ {
+  "name": "mixed-selection",
+  "note": "일괄 작업 바의 가장 긴 요약(「플레이트 1장 · 재분석 묶음 1개(5샘플)」)과 차단 단계 대표: 플레이트 카드와 재분석 묶음을 함께 고르면 주 동작 「다음 단계로」만 나오고, 할 수 없는 동작은 바 안 문구(첫 이유)로 말한다. 두 카드 모두 390px에서도 펼쳐진 ① 접수 열에 있다",
+  "steps": [
+   {
+    "clickSelector": "input[aria-label='KSP-2610-10 선택']"
+   },
+   {
+    "clickSelector": "input[aria-label='KSP-2610-04 재분석 대기 5샘플 선택']"
+   },
+   {
+    "clickSelector": "[data-page-header] h1"
+   },
+   {
+    "expect": "[aria-label='일괄 작업'][data-sel-plates='1'][data-sel-groups='1'] [data-bar-block]"
+   }
+  ]
+ },
+ {
+  "name": "advance-dialog",
+  "note": "확인 대화상자 대표: 지연 플레이트 KSP-2610-10을 골라 주 동작 「다음 단계로」(SaveBar onSave)로 확인 절차를 연다(넓은 화면 모달, 좁은 화면 BottomSheet). 확인(옮기기)은 누르지 않는다",
+  "steps": [
+   {
+    "clickSelector": "input[aria-label='KSP-2610-10 선택']"
+   },
+   {
+    "clickSelector": "[data-action='advance']"
+   },
+   {
+    "expect": "[role=dialog] [data-dialog='advance']"
+   }
+  ]
+ },
+ {
+  "name": "gbs-rerun-open",
+  "note": "기본 플레이트(KASP)와 다른 플랫폼 분기: GBS 재시퀀싱 대기 묶음을 열어 GBS 플레이트 뷰와 실패 원인(결측률 > 20%, 리드 수 부족)·재시퀀싱 이력이 붙는 샘플 상세가 나온다",
+  "steps": [
+   {
+    "clickSelector": "button:has-text('GBS-2609-01'):has-text('재시퀀싱 대기')"
+   },
+   {
+    "expect": "[data-plate-view='GBS-2609-01']"
+   }
+  ]
+ },
+ {
+  "name": "wells-shift-ctrl-blocked",
+  "note": "웰 다중 선택(Shift·Ctrl 클릭)의 차단 단계: 기본 플레이트 KSP-2610-02에서 통과 웰 A02(Shift)·A03(Ctrl)과 재분석 진행 중 웰 A01(Ctrl)을 함께 고르면 바가 「3웰 선택」이 되고 주 동작이 비활성, 바 안 빨간 문구가 「재분석 요청 불가 · A01: 이미 미해결 재분석 중인 웰입니다」를 말한다(터치에서도 보인다)",
+  "steps": [
+   {
+    "clickSelector": "[data-plate-view] button[title^='A02 ·']",
+    "modifiers": [
+     "Shift"
+    ]
+   },
+   {
+    "clickSelector": "[data-plate-view] button[title^='A03 ·']",
+    "modifiers": [
+     "Control"
+    ]
+   },
+   {
+    "clickSelector": "[data-plate-view] button[title^='A01 ·']",
+    "modifiers": [
+     "Control"
+    ]
+   },
+   {
+    "expect": "[aria-label='일괄 작업'][data-sel-wells='3'] [data-bar-block='request']"
+   }
+  ]
+ },
+ {
+  "name": "touch-multi-select",
+  "note": "터치 기기용 다중 선택: 「여러 웰 선택」을 켜고 수정자 키 없이 흩어진 통과 웰 B01·B05·B08을 탭하면 3웰이 선택되고(체크 배지 + 안쪽 글자색 테두리) 바에 「3웰 선택 · KSP-2610-02」와 「선택 해제」, 주 동작 「재분석 요청」이 나온다. 390px 웰은 44px(가로 스크롤), 모드가 꺼져 있으면 같은 탭은 샘플 상세 시트를 연다",
+  "steps": [
+   {
+    "clickSelector": "button[data-well-mode-toggle]"
+   },
+   {
+    "clickSelector": "[data-plate-view] button[title^='B01 ·']"
+   },
+   {
+    "clickSelector": "[data-plate-view] button[title^='B05 ·']"
+   },
+   {
+    "clickSelector": "[data-plate-view] button[title^='B08 ·']"
+   },
+   {
+    "expect": "[aria-label='일괄 작업'][data-sel-wells='3'] [data-action='request']:not([disabled])"
+   }
+  ]
+ },
+ {
+  "name": "request-rerun-reason",
+  "note": "입력이 필요한 확인 대화상자: 통과 웰 B01·B05·B08을 Shift·Ctrl로 골라 「재분석 요청」을 열고 재분석 사유를 「대조 이상」으로 고른다. 웰 목록과 예정 배치가 붙는 가장 긴 대화상자 문구. 요청(확정)은 누르지 않는다",
+  "steps": [
+   {
+    "clickSelector": "[data-plate-view] button[title^='B01 ·']",
+    "modifiers": [
+     "Shift"
+    ]
+   },
+   {
+    "clickSelector": "[data-plate-view] button[title^='B05 ·']",
+    "modifiers": [
+     "Control"
+    ]
+   },
+   {
+    "clickSelector": "[data-plate-view] button[title^='B08 ·']",
+    "modifiers": [
+     "Control"
+    ]
+   },
+   {
+    "clickSelector": "[aria-label='일괄 작업'] button:has-text('재분석 요청')"
+   },
+   {
+    "clickSelector": "[role=dialog] [role=radio]:has-text('대조 이상')"
+   },
+   {
+    "expect": "[role=dialog] [data-dialog='request'] [role=radio][aria-checked='true']:has-text('대조 이상')"
+   }
+  ]
+ },
+ {
+  "name": "search-results",
+  "note": "검색 입력 상태: 교배 조합 YR25-F2-0102로 검색해 플레이트 4장에 걸친 4건 결과 표(9열, 390px는 샘플 ID 고정 열 + 가로 스크롤)가 나온다",
+  "steps": [
+   {
+    "fill": "input[type=search][placeholder^='바코드']",
+    "value": "YR25-F2-0102"
+   },
+   {
+    "expect": "[data-search-count='4']"
+   }
+  ]
+ },
+ {
+  "name": "well-detail-pick",
+  "note": "샘플 상세의 「이 웰 선택에 추가」: 웰 B01을 눌러 상세를 열고(1280px 미만 시트·서랍) 추가하면 일괄 작업 대상이 된다(터치에서 웰을 모으는 두 번째 길)",
+  "steps": [
+   {
+    "clickSelector": "[data-plate-view] button[title^='B01 ·']"
+   },
+   {
+    "clickSelector": "[data-action='pick-well']"
+   },
+   {
+    "expect": "[data-action='pick-well'][aria-pressed='true']"
+   }
+  ]
+ }
+]

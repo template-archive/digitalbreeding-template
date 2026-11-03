@@ -1,0 +1,16 @@
+[
+  { "name": "override-reason-error", "note": "탈락 권고 YR23-0872를 진급으로 바꾸고 사유 없이 저장 — 사유 오류(가장 긴 오류 문구, 오류 요약·상세 문구·표 행 표시)",
+    "steps": [ { "clickSelector": "[data-line=\"YR23-0872\"]" }, { "clickSelector": "[data-decision-option=\"promote\"]" }, { "clickSelector": "[data-action=\"save\"]" }, { "wait": 300 }, { "expect": "#adv-save-errors" } ] },
+  { "name": "override-reason-saved", "note": "같은 결정에 사유를 넣고 저장 — 토스트 '결정 1건 저장 — 진급 10 / 목표 18'",
+    "steps": [ { "clickSelector": "[data-line=\"YR23-0872\"]" }, { "clickSelector": "[data-decision-option=\"promote\"]" },
+               { "fill": "[data-field=\"reason\"]", "value": "밥맛 67.4로 한계 미달이나 수량 지수 118.5로 최상위. 2027 MET에서 식미 재검정" },
+               { "clickSelector": "[data-action=\"save\"]" }, { "wait": 900 } ] },
+  { "name": "saved-override-detail", "note": "저장된 기준과 다른 결정(탈락 권고 → 보류)과 위반 형질·사유가 함께 보이는 상세",
+    "steps": [ { "clickSelector": "[data-line=\"YR22-1176\"]" } ] },
+  { "name": "filter-differs", "note": "결정 상태 필터 '기준과 다름' — 3행",
+    "steps": [ { "clickSelector": "[data-filter-status=\"differs\"]" } ] },
+  { "name": "filter-hold", "note": "자동 판정 필터 '보류' — 3행",
+    "steps": [ { "clickSelector": "[data-filter-rec=\"hold\"]" } ] },
+  { "name": "apply-recommendations", "note": "미결정 20계통 일괄 자동 판정 — 미저장 20, 진급 15 / 18",
+    "steps": [ { "clickSelector": "[data-action=\"apply-recommendations\"]" }, { "wait": 200 } ] }
+]

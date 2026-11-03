@@ -1,0 +1,107 @@
+# 템플릿 허브 PR 검사. 누가 어떤 도구로 만들었든 같은 기준(하네스 template-qa)으로 통과해야 병합한다.
+# 빌드(타입 검사·피드백 테스트·다운로드 준비의 템플릿 SSR·vite build)는 Vercel 미리보기 배포가 PR마다 같은
+# `npm run build`로 확인하므로 여기서 다시 하지 않는다. 여기서는 Vercel이 못 보는 것만 본다:
+# 템플릿 규약 lint(수 초)와 바뀐 템플릿의 브라우저 검증(템플릿당 약 1분, 6개씩 나눠 동시에).
+# 시간: 보통 PR 2~3분, 공통 모듈·CI 설정 변경 전체 검증 약 7.5분(2026-11-03 실측), 문서만 바뀐 PR은 lint만.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: 규약 검사
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      # Node 기본 모듈만 쓰므로 npm ci가 필요 없다(Math.random, 다른 템플릿 import, meta 불일치, 차트 ariaLabel 누락 등).
+      - name: 템플릿 규약 lint
+        run: node .claude/skills/template-qa/scripts/lint-templates.mjs
+
+  scope:
+    name: 검증 범위
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      shards: ${{ steps.scope.outputs.shards }}
+      count: ${{ steps.scope.outputs.count }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: node .github/scripts/verify-scope.mjs "$BASE_SHA" | tee -a "$GITHUB_OUTPUT"
+
+  verify:
+    name: 브라우저 검증 ${{ matrix.i }}/${{ matrix.n }}
+    needs: scope
+    if: needs.scope.outputs.count != '0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.scope.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Chromium 캐시
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - name: 한글 글꼴·Chromium 설치
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends fonts-noto-cjk
+          npx playwright install --with-deps chromium
+      - name: verify(390·768·1440 × 라이트·다크 + 선언 상태)
+        env:
+          SLUGS: ${{ matrix.slugs }}
+        run: node .claude/skills/template-qa/scripts/verify-templates.mjs --slug "$SLUGS" --out _workspace/qa
+      - name: 스크린샷·보고서 올리기
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-screens-${{ github.run_id }}-${{ matrix.i }}
+          path: _workspace/qa
+          retention-days: 14
+          if-no-files-found: ignore
+
+  # 병합 규칙(필수 검사)에 걸 이름 하나. 조각 수가 PR마다 달라도 이 작업 이름은 같다.
+  verify-result:
+    name: 브라우저 검증
+    needs: [scope, verify]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 결과 모으기
+        env:
+          COUNT: ${{ needs.scope.outputs.count }}
+          SCOPE: ${{ needs.scope.result }}
+          VERIFY: ${{ needs.verify.result }}
+        run: |
+          echo "범위 ${SCOPE} · 조각 ${COUNT:-?}개 · 검증 ${VERIFY}"
+          if [ "$SCOPE" != "success" ]; then exit 1; fi
+          if [ "$COUNT" = "0" ]; then echo "문서만 바뀌어 브라우저 검증을 건너뛰었습니다."; exit 0; fi
+          test "$VERIFY" = "success"

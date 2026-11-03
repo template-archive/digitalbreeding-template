@@ -1,0 +1,190 @@
+/*
+ * 디자인 토큰 — 색·반경·그림자의 단일 원천.
+ * 라이트 값은 :root, 다크 값은 아래 두 블록(시스템 설정 / data-theme 강제, 둘 다 screen 전용)에 같은 내용으로 둔다.
+ * 이 파일은 레이어 밖(unlayered)에 두어 Tailwind @theme의 자리표시자 값을 덮어쓴다.
+ */
+:root {
+  color-scheme: light;
+
+  /* UI 의미색 */
+  --color-bg: #f4f5f7;
+  --color-surface: #ffffff;
+  --color-surface-2: #eef0f3;
+  --color-border: #dde1e7;
+  --color-text: #1a1f29;
+  --color-text-muted: #596273;
+  --color-accent: #3c4fd0;
+  --color-accent-contrast: #ffffff;
+  /* 주 버튼(거의 검정 채움)·UI 크롬 활성(회색 채움). 강조색은 데이터와 선택 표시(포커스 링 포함)에만 쓴다 — 앱 화면 규칙, 2026-10-30 */
+  --color-primary: #1d1f20;
+  --color-primary-contrast: #ffffff;
+  --color-active: #e2e5ea;
+  /* 결론 패널: 기존 잉크색을 쓰는 면. 다크는 표면 2로 낮춰 눈부심을 막는다(새 색 없음) */
+  --color-panel: #1d1f20;
+  --color-panel-ink: #ffffff;
+  --color-panel-muted: #c6ccd6;
+  --color-positive: #157347;
+  /* negative·warning은 Badge(10% 배경 위 12px 글자)에서 bg·surface·surface-2 모두 4.5:1 이상이 되도록 정한 값 */
+  --color-negative: #b52e1c;
+  --color-warning: #975200;
+  --color-info: #1f5fbf;
+
+  /* 범주형 8색 — 색상환 분산 + 인접 색 명도 차(진/밝 교대) */
+  --viz-cat-1: #3c5ad6; /* 파랑 */
+  --viz-cat-2: #e8710a; /* 주황 */
+  --viz-cat-3: #108c86; /* 청록 — 2026-10-30 #0f8f74에서 이동(positive와 ΔE00 12.2 → 17.1) */
+  --viz-cat-4: #b04fc8; /* 보라 */
+  --viz-cat-5: #d9a400; /* 황 */
+  --viz-cat-6: #2f9fc4; /* 하늘 */
+  --viz-cat-7: #c8325f; /* 자홍 */
+  --viz-cat-8: #6b7a8f; /* 회청 */
+
+  /* 순차형 7단계(낮음 → 높음) */
+  --viz-seq-1: #eef1fd;
+  --viz-seq-2: #d3daf9;
+  --viz-seq-3: #aab8f2;
+  --viz-seq-4: #7d92e6;
+  --viz-seq-5: #536dd8;
+  --viz-seq-6: #3650bf;
+  --viz-seq-7: #22388f;
+
+  /* 발산형: 음(파랑) — 중립 — 양(주황·빨강) */
+  --viz-div-neg-3: #2a58b8;
+  --viz-div-neg-2: #6b91da;
+  --viz-div-neg-1: #b3c7ec;
+  --viz-div-0: #e7e8eb;
+  --viz-div-pos-1: #f3c3a6;
+  --viz-div-pos-2: #e3825a;
+  --viz-div-pos-3: #b83c1c;
+
+  /* 유전체 — 염색체 교대 2색은 채도가 낮은 슬레이트로 둔다.
+     강조(--color-accent, 리드 SNP·선택 표시)와 범주 1색(파랑)이 색상만으로 구분되게 하기 위해서다. */
+  --viz-chr-a: #556172;
+  --viz-chr-b: #aab3c0;
+  --viz-threshold: #d6334a;
+
+  /* 형태 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --shadow-1: 0 1px 2px rgb(16 24 40 / 0.06);
+  --shadow-2: 0 4px 12px rgb(16 24 40 / 0.1), 0 1px 3px rgb(16 24 40 / 0.06);
+  --focus-ring: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-accent);
+}
+
+/*
+ * 다크 값은 화면(screen)에서만 쓴다. 인쇄는 항상 라이트 토큰이다(다크 모드에서 인쇄해도 흰 종이에 읽히는 글자색).
+ * [data-printing]: 인쇄 캔버스(ScaledCanvas print) 화면에서 beforeprint 때 themeMode가 켠다 — JS가 읽는 토큰(useChartTheme)도 라이트가 되게.
+ * 다크 색 2개(cat-2, cat-3)는 2026-10-30 의미색과 겹쳐 옮겼다: 검산은 db-design-system/scripts/check-palette.mjs
+ */
+@media screen and (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not([data-printing]) {
+    color-scheme: dark;
+    --color-bg: #0e1116;
+    --color-surface: #161a21;
+    --color-surface-2: #1e232c;
+    --color-border: #2b313c;
+    --color-text: #e5e8ee;
+    --color-text-muted: #9ba4b4;
+    --color-accent: #8c99ff;
+    --color-accent-contrast: #0e1116;
+    --color-primary: #ffffff;
+    --color-primary-contrast: #0e1116;
+    --color-active: #2f3540;
+    --color-panel: #1e232c;
+    --color-panel-ink: #e5e8ee;
+    --color-panel-muted: #9ba4b4;
+    --color-positive: #3fcf8e;
+    --color-negative: #ff7a68;
+    --color-warning: #f2a93b;
+    --color-info: #6aa8ff;
+
+    --viz-cat-1: #7b93ff;
+    --viz-cat-2: #f57c2a;
+    --viz-cat-3: #27bdb6;
+    --viz-cat-4: #d48aea;
+    --viz-cat-5: #f2c94c;
+    --viz-cat-6: #5cc3e8;
+    --viz-cat-7: #f06b93;
+    --viz-cat-8: #a3afc2;
+
+    --viz-seq-1: #1f2740;
+    --viz-seq-2: #2a3a6e;
+    --viz-seq-3: #3a52a0;
+    --viz-seq-4: #536fd0;
+    --viz-seq-5: #7790ec;
+    --viz-seq-6: #a3b4f7;
+    --viz-seq-7: #d3dcff;
+
+    --viz-div-neg-3: #5f8ff0;
+    --viz-div-neg-2: #3f66b4;
+    --viz-div-neg-1: #2c3f68;
+    --viz-div-0: #2a2e36;
+    --viz-div-pos-1: #6b3a26;
+    --viz-div-pos-2: #b8603a;
+    --viz-div-pos-3: #f08a5d;
+
+    --viz-chr-a: #8e99ab;
+    --viz-chr-b: #4f596b;
+    --viz-threshold: #ff6b7f;
+
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.3);
+    --shadow-2: 0 4px 12px rgb(0 0 0 / 0.35);
+  }
+}
+
+@media screen {
+  :root[data-theme='dark']:not([data-printing]) {
+    color-scheme: dark;
+    --color-bg: #0e1116;
+    --color-surface: #161a21;
+    --color-surface-2: #1e232c;
+    --color-border: #2b313c;
+    --color-text: #e5e8ee;
+    --color-text-muted: #9ba4b4;
+    --color-accent: #8c99ff;
+    --color-accent-contrast: #0e1116;
+    --color-primary: #ffffff;
+    --color-primary-contrast: #0e1116;
+    --color-active: #2f3540;
+    --color-panel: #1e232c;
+    --color-panel-ink: #e5e8ee;
+    --color-panel-muted: #9ba4b4;
+    --color-positive: #3fcf8e;
+    --color-negative: #ff7a68;
+    --color-warning: #f2a93b;
+    --color-info: #6aa8ff;
+
+    --viz-cat-1: #7b93ff;
+    --viz-cat-2: #f57c2a;
+    --viz-cat-3: #27bdb6;
+    --viz-cat-4: #d48aea;
+    --viz-cat-5: #f2c94c;
+    --viz-cat-6: #5cc3e8;
+    --viz-cat-7: #f06b93;
+    --viz-cat-8: #a3afc2;
+
+    --viz-seq-1: #1f2740;
+    --viz-seq-2: #2a3a6e;
+    --viz-seq-3: #3a52a0;
+    --viz-seq-4: #536fd0;
+    --viz-seq-5: #7790ec;
+    --viz-seq-6: #a3b4f7;
+    --viz-seq-7: #d3dcff;
+
+    --viz-div-neg-3: #5f8ff0;
+    --viz-div-neg-2: #3f66b4;
+    --viz-div-neg-1: #2c3f68;
+    --viz-div-0: #2a2e36;
+    --viz-div-pos-1: #6b3a26;
+    --viz-div-pos-2: #b8603a;
+    --viz-div-pos-3: #f08a5d;
+
+    --viz-chr-a: #8e99ab;
+    --viz-chr-b: #4f596b;
+    --viz-threshold: #ff6b7f;
+
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.3);
+    --shadow-2: 0 4px 12px rgb(0 0 0 / 0.35);
+  }
+}

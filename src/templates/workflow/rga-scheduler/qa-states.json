@@ -1,0 +1,150 @@
+[
+ {
+  "name": "bed-selected",
+  "note": "베드 선택: 두 묶음이 같은 베드를 쓰는 B03(R26-4 64셀 + R26-5 32셀 = 96/500) 상세와 빈 기간 '없음'. 1280px 미만은 시트(390)·서랍(768)",
+  "steps": [
+   {
+    "clickSelector": "[data-bed-label='B03']"
+   },
+   {
+    "expect": "[data-bed-detail='B03']"
+   }
+  ]
+ },
+ {
+  "name": "input-error-early",
+  "note": "입력 오류: R26-4 F2 파종일을 종자 준비일(12-13) 전인 2026-12-05로 — 칸 오류와 저장 차단(시트 아래 줄 문구·저장 비활성)",
+  "steps": [
+   {
+    "clickSelector": "[data-batch-row='R26-4']"
+   },
+   {
+    "fill": "[data-field='sow']",
+    "value": "2026-12-05"
+   },
+   {
+    "press": "Tab"
+   },
+   {
+    "expect": "[data-field-error='sow']"
+   },
+   {
+    "expect": "[data-save-state='error']"
+   }
+  ]
+ },
+ {
+  "name": "input-error-format",
+  "note": "입력 오류: 없는 날짜 2026-12-32 — 형식 오류 문구",
+  "steps": [
+   {
+    "clickSelector": "[data-batch-row='R26-4']"
+   },
+   {
+    "fill": "[data-field='sow']",
+    "value": "2026-12-32"
+   },
+   {
+    "press": "Tab"
+   },
+   {
+    "expect": "[data-field-error='sow']"
+   }
+  ]
+ },
+ {
+  "name": "conflict-capacity",
+  "note": "일정 충돌 경고(가장 긴 문구): R26-4 F2를 A05로 — 575/500셀, 충돌 9구간, 간트 충돌 빗금",
+  "steps": [
+   {
+    "clickSelector": "[data-batch-row='R26-4']"
+   },
+   {
+    "clickSelector": "[data-bed-option='A05']"
+   },
+   {
+    "expect": "[data-conflict='true']"
+   },
+   {
+    "expect": "[data-save-state='error']"
+   }
+  ]
+ },
+ {
+  "name": "conflict-maintenance",
+  "note": "정비 충돌: R26-2 F2(10-30)를 B05로 — 정비 11-16~11-27 겹침(첫 구간), 이후 P27-B와 680셀 초과",
+  "steps": [
+   {
+    "clickSelector": "[data-batch-row='R26-2']"
+   },
+   {
+    "clickSelector": "[data-bed-option='B05']"
+   },
+   {
+    "expect": "[data-conflict='true']"
+   }
+  ]
+ },
+ {
+  "name": "deadline-late",
+  "note": "마감 지연(경보): R25-4 F6 파종을 2027-03-05로 — 잎 채취 03-23, 마감 03-19보다 4일 늦음. 저장 바 「마감 지연 1건 · 마감 주의 0건」(저장 가능)",
+  "steps": [
+   {
+    "clickSelector": "[data-batch-row='R25-4']"
+   },
+   {
+    "fill": "[data-field='sow']",
+    "value": "2027-03-05"
+   },
+   {
+    "press": "Tab"
+   },
+   {
+    "expect": "[data-deadline-status='late']"
+   },
+   {
+    "expect": "[data-save-state='warn']"
+   }
+  ]
+ },
+ {
+  "name": "deadline-late-saved",
+  "note": "같은 변경 저장 — 토스트 「마감 지연 1건(GS 1차 시료 채취 4일 늦음)」, 경보 목록 맨 위 경보, KPI 3 '3 / 4묶음 충족'(negative)",
+  "steps": [
+   {
+    "clickSelector": "[data-batch-row='R25-4']"
+   },
+   {
+    "fill": "[data-field='sow']",
+    "value": "2027-03-05"
+   },
+   {
+    "press": "Tab"
+   },
+   {
+    "clickSelector": "[data-action='save']"
+   },
+   {
+    "wait": 900
+   },
+   {
+    "expect": "[data-save-state='clean']"
+   }
+  ]
+ },
+ {
+  "name": "embryo-method",
+  "note": "배아 배양 선택: R26-5 F2부터 85일 — F6 종자 준비 2027-12-17(435일), 잎 채취 2028-01-04, 여유 73일",
+  "steps": [
+   {
+    "clickSelector": "[data-batch-row='R26-5']"
+   },
+   {
+    "clickSelector": "[data-method-option='embryo']"
+   },
+   {
+    "expect": "[data-save-state='dirty']"
+   }
+  ]
+ }
+]

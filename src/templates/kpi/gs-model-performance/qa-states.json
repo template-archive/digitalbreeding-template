@@ -1,0 +1,4 @@
+[
+  { "name": "blast-selected", "note": "비수량 형질: 학습 곡선 범례·세로 계획 라벨이 바뀌고 판정 문구가 가장 긴 형질", "steps": [{ "clickSelector": "ul[aria-label=\"형질별 다음 재학습 모델 판정\"] button:has-text(\"도열병 저항성\")" }, { "wait": 500 }, { "expect": "ul[aria-label=\"형질별 다음 재학습 모델 판정\"] button[aria-pressed=\"true\"]:has-text(\"도열병 저항성\")" }] },
+  { "name": "ability-metric", "note": "형질 × 모델 차트를 예측 능력으로 전환(각주 문구가 가장 긴 상태)", "steps": [{ "clickSelector": "[role=\"radio\"]:has-text(\"예측 능력\")" }, { "wait": 400 }, { "expect": "[role=\"radio\"][aria-checked=\"true\"]:has-text(\"예측 능력\")" }] }
+]

@@ -1,0 +1,103 @@
+[
+ {
+  "name": "rq045-selected",
+  "note": "주의 5건(사용 전 재검사 기한 도래)이 붙는 가장 긴 점검 문구. 기본 화면에서는 선택되지 않는다. 390px에서 배지 안 날짜(YYYY-MM-DD)가 하이픈에서 갈리지 않는지 본다",
+  "steps": [
+   {
+    "click": "RQ26-045"
+   },
+   {
+    "expect": "[data-request-id='RQ26-045']"
+   }
+  ]
+ },
+ {
+  "name": "rq044-reject-open",
+  "note": "차단 1 · 주의 2가 붙는 기본 요청 RQ26-044에서 결정 바의 「반려」를 눌러 반려 사유·메모 입력란을 연 상태(1440은 화면 아래 바 위, 390·768은 시트·서랍 아래 줄). 사유를 고르기 전에는 반려 확정이 비활성",
+  "steps": [
+   {
+    "click": "RQ26-044"
+   },
+   {
+    "clickSelector": "[data-action='reject']"
+   },
+   {
+    "expect": "[data-reject-form='RQ26-044']"
+   }
+  ]
+ },
+ {
+  "name": "rq044-invalid-qty",
+  "note": "입력 오류: RQ26-044 첫 품목 요청량을 0으로 바꿔 「차단 · 요청량은 1 이상의 정수」와 승인 차단 사유(상세 안 전문, 결정 바 「승인할 수 없습니다 · 사유 n건」)가 붙는다",
+  "steps": [
+   {
+    "click": "RQ26-044"
+   },
+   {
+    "fill": "[data-request-id='RQ26-044'] input[type=number]",
+    "value": "0"
+   },
+   {
+    "expect": "[data-request-id='RQ26-044'] input[aria-invalid='true']"
+   }
+  ]
+ },
+ {
+  "name": "lot-tab",
+  "note": "재고 로트 탭(정리 회차 5 A3로 로트 204·11쪽). 390px 카드 페이지 이동(1 / 11쪽)과 768·1440px 표 페이지 버튼이 넘치지 않는지 본다",
+  "steps": [
+   {
+    "click": "재고 로트 (204)"
+   },
+   {
+    "expect": "nav[aria-label='재고 로트 페이지']"
+   }
+  ]
+ },
+ {
+  "name": "rq043-approved",
+  "note": "출고 대기 요청: 주 동작이 「출고」, 보조가 「승인 취소」로 바뀌고 상세에 「출고하면 제안 로트에서 차감…」 안내가 붙는다(결정 바·시트 아래 줄 같은 문법)",
+  "steps": [
+   {
+    "click": "RQ26-043"
+   },
+   {
+    "expect": "[data-action='ship']"
+   }
+  ]
+ },
+ {
+  "name": "rq044-rejected",
+  "note": "반려 뒤 빈 결정 상태: 사유를 골라 반려를 확정하면 요청이 닫혀 결정 바·시트 아래 줄이 사라지고 상세는 반려 사유를 보인다",
+  "steps": [
+   {
+    "click": "RQ26-044"
+   },
+   {
+    "clickSelector": "[data-action='reject']"
+   },
+   {
+    "fill": "[data-reject-form] input",
+    "value": "목업 메모"
+   },
+   {
+    "clickSelector": "[data-reject-form] select"
+   },
+   {
+    "press": "ArrowDown"
+   },
+   {
+    "press": "Enter"
+   },
+   {
+    "clickSelector": "[data-reject-form] button:has-text('반려 확정')"
+   },
+   {
+    "wait": 800
+   },
+   {
+    "expect": "[data-request-id='RQ26-044'] :text('반려 사유')"
+   }
+  ]
+ }
+]

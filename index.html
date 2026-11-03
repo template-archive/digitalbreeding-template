@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>디지털육종 템플릿 라이브러리</title>
+    <script>
+      // 첫 페인트 전에 ?theme= 강제 테마를 적용해 깜빡임을 막는다.
+      (function () {
+        var t = new URLSearchParams(location.search).get('theme')
+        if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t)
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+[
+  {
+    "name": "adm-selected",
+    "note": "요약 표에서 혼합형 40계통 선택: PCA 흐림, ADMIXTURE 강조(390은 412계통 한 화면), 선택 표",
+    "steps": [
+      { "clickSelector": "tr:has-text(\"혼합형\"):has-text(\"20 / 20\")" },
+      { "wait": 300 },
+      { "expect": "button:has-text(\"선택 해제\")" }
+    ]
+  }
+]

@@ -1,0 +1,79 @@
+[
+ {
+  "name": "cr324-selected",
+  "note": "경고 단계 대표: 결실 과다(52.9%) + KASP 대기라 「결실률이 높아 자식 가능성이 있습니다…」 경고와 결과 열 대신 일정 문구(잎 채취·접수·결과 예정)가 붙는다. 기본 선택 CR26-315(자식 의심)와 다른 분기. 390px는 하단 시트, 768px는 서랍으로 열린다",
+  "steps": [
+   {
+    "click": "CR26-324"
+   },
+   {
+    "expect": "[data-detail-id='CR26-324']"
+   }
+  ]
+ },
+ {
+  "name": "cr324-manual-confirm",
+  "note": "가장 긴 상세 패널: 대기 조합을 수동으로 '확인'으로 바꿔 「수동 변경 · KASP 판정: 대기」 배지 + 사유 선택 + 「KASP 결과(11/03 예정) 전입니다」 경고까지 한 패널에 모두 붙는다. 390·768은 시트 아래 줄에 「변경 1건 · 저장」이 보여 시트를 닫지 않고 저장한다(저장은 하지 않음)",
+  "steps": [
+   {
+    "click": "CR26-324"
+   },
+   {
+    "clickSelector": "[aria-label='CR26-324 F1 진위 상태'] [role=radio]:has-text('확인')"
+   },
+   {
+    "expect": "[data-manual-override='CR26-324']"
+   }
+  ]
+ },
+ {
+  "name": "cr302-short",
+  "note": "재교배 사유가 '종자 부족'인 대표(결실 저조 7.7%, 유효 F1 17/40). 「2027년 1차 교배(온실)에서 다시 교배 권장」과 저조 배지가 함께 붙는다",
+  "steps": [
+   {
+    "click": "CR26-302"
+   },
+   {
+    "expect": "[data-detail-id='CR26-302']"
+   }
+  ]
+ },
+ {
+  "name": "seeds-input-error",
+  "note": "입력 오류: 입력 필요 조합 CR26-319에 교배 영화(223)보다 큰 립수 250을 넣어 칸 아래 짧은 표식(1440) 또는 카드 전폭 문구(390), 저장 바 위 오류 띠(칸으로 이동하는 링크)와 「오류 1건을 고쳐야 저장할 수 있습니다」(저장 차단)가 붙는다",
+  "steps": [
+   {
+    "fill": "input[aria-label='CR26-319 결실 립수']",
+    "value": "250"
+   },
+   {
+    "press": "Tab"
+   },
+   {
+    "expect": "[data-save-state='error']"
+   },
+   {
+    "expect": "#cr-save-errors"
+   }
+  ]
+ },
+ {
+  "name": "seeds-input-dirty",
+  "note": "정상 입력 후 저장 전: CR26-319 = 73을 넣어 행 「✎미저장」 + 옅은 면, 저장 바 고정(변경 1건), KPI가 유효 합 844·달성 20으로 바뀐다(DEV 입력 예시와 같음)",
+  "steps": [
+   {
+    "fill": "input[aria-label='CR26-319 결실 립수']",
+    "value": "73"
+   },
+   {
+    "press": "Tab"
+   },
+   {
+    "expect": "[data-save-state='dirty']"
+   },
+   {
+    "expect": "[data-unsaved='true']"
+   }
+  ]
+ }
+]

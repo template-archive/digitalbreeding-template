@@ -1,0 +1,28 @@
+node_modules
+dist
+_workspace/qa
+*.tsbuildinfo
+public/downloads/
+.vercel/
+_workspace/
+.agents/
+# 하네스 정의(에이전트·스킬)만 저장소에 둔다. 로컬 설정(settings.local.json 등)은 제외.
+.claude/*
+!.claude/agents/
+!.claude/skills/
+.codex/
+.aws/
+.taste/
+.taste-skill/
+.playwright-mcp/
+.idea/
+.vscode/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
+
+# 브레인스토밍 시각 보조(로컬 목업 서버)
+.superpowers/

@@ -1,0 +1,120 @@
+[
+ {
+  "name": "review-recommended",
+  "note": "② 조합 검토에 들어가 추천 5건을 담은 화면. 기본 화면은 ① 단계라 행렬·셀 상세(UC 식)·390px 조합 목록·담은 조합 칩이 모두 검증되지 않는다",
+  "steps": [
+   {
+    "click": "다음: 조합 검토"
+   },
+   {
+    "click": "추천 조합 모두 담기"
+   },
+   {
+    "expect": "ul[aria-label='담은 조합'][data-planned-count='5']"
+   }
+  ]
+ },
+ {
+  "name": "confirm-caution",
+  "note": "③ 확정 단계의 주의 단계 대표: 추천 5건 중 1×6 출수기 차 11일 「개화기 불일치」 주의만 있어 확정이 막히지 않는다. 390px는 하단 고정 단계 바와 좁은 열 배열(조합 한 칸 + UC + 아이콘 편집)",
+  "steps": [
+   {
+    "click": "다음: 조합 검토"
+   },
+   {
+    "click": "추천 조합 모두 담기"
+   },
+   {
+    "click": "다음: 확정"
+   },
+   {
+    "expect": "[data-confirm-step][data-kin-warn='false'] [data-warning-summary][data-critical-count='0']:not([data-caution-count='0'])"
+   }
+  ]
+ },
+ {
+  "name": "confirm-kin-warn",
+  "note": "차단 단계 대표이자 가장 긴 문구: 강한 근연 1×2(f 0.52)를 행렬 셀 상세에서 담아 경보·주의 요약에 「강한 근연 조합」이, 단계 바(SaveBar) 왼쪽에 막는 이유와 확인 체크박스 문구가 붙는다(체크 전 확정 비활성). 행렬은 768px 이상에서만 보여 데스크톱 경로로 분리",
+  "viewports": [
+   768,
+   1440
+  ],
+  "steps": [
+   {
+    "click": "다음: 조합 검토"
+   },
+   {
+    "clickSelector": "button[title^='YR22-0412 × YR22-0415']"
+   },
+   {
+    "click": "조합 담기"
+   },
+   {
+    "click": "추천 조합 모두 담기"
+   },
+   {
+    "click": "다음: 확정"
+   },
+   {
+    "expect": "[data-confirm-step][data-kin-warn='true']"
+   },
+   {
+    "expect": "[data-save-bar] [data-kin-ack]"
+   }
+  ]
+ },
+ {
+  "name": "confirm-kin-warn-mobile",
+  "note": "confirm-kin-warn의 390px 재현. 767px 이하는 ② 기본이 조합 목록이라 「행렬 보기」로 바꾼 뒤 같은 셀을 담는다(하단 고정 단계 바에 체크박스 문구가 함께 들어가는지 확인)",
+  "viewports": [
+   390
+  ],
+  "steps": [
+   {
+    "click": "다음: 조합 검토"
+   },
+   {
+    "click": "행렬 보기"
+   },
+   {
+    "clickSelector": "button[title^='YR22-0412 × YR22-0415']"
+   },
+   {
+    "click": "조합 담기"
+   },
+   {
+    "click": "추천 조합 모두 담기"
+   },
+   {
+    "click": "다음: 확정"
+   },
+   {
+    "expect": "[data-confirm-step][data-kin-warn='true']"
+   },
+   {
+    "expect": "[data-save-bar] [data-kin-ack]"
+   }
+  ]
+ },
+ {
+  "name": "confirmed-readonly",
+  "note": "확정 뒤 읽기 전용: 조합 ID가 붙고 단계 바가 「확정된 계획은 읽기 전용입니다」 + 주 동작 「새 계획 시작」으로 바뀐다. 편집 버튼·이전 동작이 사라진다",
+  "steps": [
+   {
+    "click": "다음: 조합 검토"
+   },
+   {
+    "click": "추천 조합 모두 담기"
+   },
+   {
+    "click": "다음: 확정"
+   },
+   {
+    "clickSelector": "[data-action='step-next']"
+   },
+   {
+    "expect": "[data-action='step-next']:has-text('새 계획 시작')"
+   }
+  ]
+ }
+]

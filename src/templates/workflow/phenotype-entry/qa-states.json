@@ -1,0 +1,187 @@
+[
+ {
+  "name": "plot130-dev",
+  "note": "가장 긴 셀 상세: 반복 편차(≠) 칸 구 130 수량을 검증 목록에서 골라 사유 문장 + 다른 반복 평균·차이 + 「편차 경고는 어느 값이 틀렸는지가 아니라…」 설명이 붙는다. 기본 선택 구 225 수장은 불가능 값(오류)이라 이 분기가 없다",
+  "viewports": [
+   1440
+  ],
+  "steps": [
+   {
+    "click": "구 130 · 쌀 수량 603.6 kg/10a"
+   },
+   {
+    "expect": "[data-cell-detail='130|yield'][data-cell-status='dev']"
+   }
+  ]
+ },
+ {
+  "name": "plot130-dev-mobile",
+  "note": "plot130-dev의 390·768px 재현. 1280px 미만은 셀 상세가 시트(390)·서랍(768)이라 「셀 상세」 버튼으로 연다",
+  "viewports": [
+   390,
+   768
+  ],
+  "steps": [
+   {
+    "click": "구 130 · 쌀 수량 603.6 kg/10a"
+   },
+   {
+    "clickSelector": "[data-action='open-cell-detail']"
+   },
+   {
+    "expect": "[data-cell-detail='130|yield'][data-cell-status='dev']"
+   }
+  ]
+ },
+ {
+  "name": "plot110-range",
+  "note": "주의(범위 밖) 단계 대표: 구 110 수량 248.0(허용 300~800 밖)과 구 메모(참새 피해)가 함께 보인다. 차단(오류) 단계는 기본 화면(구 225 수장 197, 저장 막힘 사유)이 이미 대표한다",
+  "viewports": [
+   1440
+  ],
+  "steps": [
+   {
+    "click": "구 110 · 쌀 수량 248.0 kg/10a"
+   },
+   {
+    "expect": "[data-cell-detail='110|yield'][data-cell-status='range']"
+   }
+  ]
+ },
+ {
+  "name": "plot110-range-mobile",
+  "note": "plot110-range의 390·768px 재현(셀 상세 시트·서랍)",
+  "viewports": [
+   390,
+   768
+  ],
+  "steps": [
+   {
+    "click": "구 110 · 쌀 수량 248.0 kg/10a"
+   },
+   {
+    "clickSelector": "[data-action='open-cell-detail']"
+   },
+   {
+    "expect": "[data-cell-detail='110|yield'][data-cell-status='range']"
+   }
+  ]
+ },
+ {
+  "name": "input-impossible",
+  "note": "입력 오류(차단) 단계: 저장된 구 224 쌀 수량을 5480(불가능 값 0~1,200 밖, 소수점 누락 의심 548?)으로 고쳐 쓴다. 기본 화면의 오류 1칸(구 225 수장)에 더해 저장 바 상태가 「오류 2칸」이 된다(md 미만은 상태 한 줄, md 이상은 저장 막힘 사유 문장)",
+  "steps": [
+   {
+    "clickSelector": "td[aria-label^='구 224,'][aria-label*=', 쌀 수량 ']"
+   },
+   {
+    "press": "F2"
+   },
+   {
+    "fill": "input[aria-label='쌀 수량 입력 — 구 224']",
+    "value": "5480"
+   },
+   {
+    "press": "Enter"
+   },
+   {
+    "press": "ArrowUp"
+   },
+   {
+    "expect": "[data-save-state][data-error-count='2']"
+   }
+  ]
+ },
+ {
+  "name": "save-conflict",
+  "note": "저장 충돌 단계: 구 225 수장 197을 19.7로 고쳐 오류를 없앤 뒤 Ctrl+S로 저장하면 미저장 7칸 중 구 222 수장·이삭수 2칸이 다른 조사자(이서진 10:37) 저장과 충돌한다. 충돌 칸 222 수장을 골라 셀 상세의 「내 값·서버 값」 비교와 해결 버튼(가장 긴 저장 상태 문구)을 연다",
+  "viewports": [
+   1440
+  ],
+  "steps": [
+   {
+    "clickSelector": "td[aria-label^='구 225,'][aria-label*=', 수장 ']"
+   },
+   {
+    "press": "F2"
+   },
+   {
+    "fill": "input[aria-label='수장 입력 — 구 225']",
+    "value": "19.7"
+   },
+   {
+    "press": "Enter"
+   },
+   {
+    "press": "Control+s"
+   },
+   {
+    "expect": "[data-save-state='conflict']",
+    "timeout": 5000
+   },
+   {
+    "clickSelector": "td[aria-label^='구 222,'][aria-label*=', 수장 ']"
+   },
+   {
+    "expect": "[data-cell-detail='222|panicle'][data-cell-status='conflict']"
+   }
+  ]
+ },
+ {
+  "name": "save-conflict-mobile",
+  "note": "save-conflict의 390·768px 재현. 저장 뒤 충돌 칸을 고르고(390은 바로 편집이 열려 Esc로 닫는다) 「셀 상세」 시트·서랍을 연다. 저장 바의 「충돌 2칸」도 함께 확인",
+  "viewports": [
+   390,
+   768
+  ],
+  "steps": [
+   {
+    "clickSelector": "td[aria-label^='구 225,'][aria-label*=', 수장 ']"
+   },
+   {
+    "press": "F2"
+   },
+   {
+    "fill": "input[aria-label='수장 입력 — 구 225']",
+    "value": "19.7"
+   },
+   {
+    "press": "Enter"
+   },
+   {
+    "press": "Control+s"
+   },
+   {
+    "expect": "[data-save-state='conflict']",
+    "timeout": 5000
+   },
+   {
+    "clickSelector": "td[aria-label^='구 222,'][aria-label*=', 수장 ']"
+   },
+   {
+    "press": "Escape"
+   },
+   {
+    "clickSelector": "[data-action='open-cell-detail']"
+   },
+   {
+    "expect": "[data-cell-detail='222|panicle'][data-cell-status='conflict']"
+   }
+  ]
+ },
+ {
+  "name": "savebar-expanded-mobile",
+  "note": "390px 저장 바 「자세히」 펼침: 마지막 저장·로컬 초안 복원·저장 막힘 사유가 나오는 가장 긴 바. 접으면 한 줄 + 버튼",
+  "viewports": [
+   390
+  ],
+  "steps": [
+   {
+    "clickSelector": "[data-save-bar] button[aria-expanded='false']"
+   },
+   {
+    "expect": "#pe-save-reason"
+   }
+  ]
+ }
+]
