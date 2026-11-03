@@ -12,6 +12,10 @@ export type LoginDialogProps = { open: boolean; available: boolean; onClose(): v
 const CODE_SENT = '코드를 보냈습니다. 메일이 오지 않으면 주소를 확인해 주세요.'
 const CLOSED = '로그인을 아직 사용할 수 없습니다.'
 let rememberedEmail = ''
+/** 코드를 보낸 뒤 창을 닫았다 다시 열어도, 코드가 유효한 동안(10분)은 코드 단계와 다시 받기 대기 시간을 이어 간다. */
+let sentCode: { email: string; resendAt: number; expiresAt: number } | null = null
+const CODE_TTL_MS = 10 * 60_000
+const resumable = () => (sentCode && sentCode.expiresAt > Date.now() && sentCode.email === rememberedEmail ? sentCode : null)
 
 /** 한글 조합 중 Enter는 글자 확정이지 제출이 아니다. */
 const holdWhileComposing = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -23,14 +27,14 @@ export function LoginDialog({ open, available, onClose, onSuccess }: LoginDialog
   const codeRef = useRef<HTMLInputElement>(null)
   const nameRef = useRef<HTMLInputElement>(null)
   const id = useId()
-  const [step, setStep] = useState<'email' | 'code'>('email')
+  const [step, setStep] = useState<'email' | 'code'>(() => (resumable() ? 'code' : 'email'))
   const [email, setEmail] = useState(rememberedEmail)
   const [code, setCode] = useState('')
   const [name, setName] = useState('')
   const [needsName, setNeedsName] = useState(false)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
-  const [resendAt, setResendAt] = useState(0)
+  const [resendAt, setResendAt] = useState(() => resumable()?.resendAt ?? 0)
   const [now, setNow] = useState(() => Date.now())
   const wait = Math.max(0, Math.ceil((resendAt - now) / 1000))
 
@@ -69,8 +73,10 @@ export function LoginDialog({ open, available, onClose, onSuccess }: LoginDialog
   const sendCode = () => run(async () => {
     const { resendAfter } = await requestLoginCode(email.trim())
     rememberedEmail = email.trim()
+    const nextResend = Date.now() + resendAfter * 1000
+    sentCode = { email: rememberedEmail, resendAt: nextResend, expiresAt: Date.now() + CODE_TTL_MS }
     setStep('code')
-    setResendAt(Date.now() + resendAfter * 1000)
+    setResendAt(nextResend)
     setNow(Date.now())
     requestAnimationFrame(() => codeRef.current?.focus())
   })
@@ -84,10 +90,12 @@ export function LoginDialog({ open, available, onClose, onSuccess }: LoginDialog
         requestAnimationFrame(() => nameRef.current?.focus())
         return
       }
+      sentCode = null
       onSuccess(result.user)
     })
   }
   const changeAddress = () => {
+    sentCode = null
     setStep('email')
     setCode('')
     setName('')
@@ -132,7 +140,7 @@ export function LoginDialog({ open, available, onClose, onSuccess }: LoginDialog
             <p className="auth-notice" role="status">{CODE_SENT}</p>
             <div className="auth-field">
               <label htmlFor={id + '-code'}>6자리 코드</label>
-              <input ref={codeRef} id={id + '-code'} inputMode="numeric" autoComplete="one-time-code" maxLength={11} required
+              <input ref={codeRef} id={id + '-code'} inputMode="numeric" autoComplete="one-time-code" maxLength={11} required autoFocus
                 value={code} disabled={busy} aria-invalid={!!error} aria-describedby={id + '-code-hint' + (error ? ' ' + id + '-error' : '')}
                 onChange={event => setCode(event.target.value)} onKeyDown={holdWhileComposing} />
               <p id={id + '-code-hint'} className="auth-hint">새 코드를 받으면 이전 코드는 쓸 수 없습니다.</p>

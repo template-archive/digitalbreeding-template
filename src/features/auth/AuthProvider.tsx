@@ -64,8 +64,13 @@ export function AuthProvider({ enabled, children }: { enabled: boolean; children
       throw error
     }
   }, [signedOut])
+  // 서버가 세션을 지웠을 때만 로그아웃 상태로 바꾼다. 실패하면 쿠키·세션이 남아 있으므로 오류를 던져 화면이 알리게 한다.
   const logout = useCallback(async () => {
-    await logoutAccount().catch(() => undefined)
+    try {
+      await logoutAccount()
+    } catch (error) {
+      if (!(error instanceof AuthRequestError && error.status === 401)) throw error
+    }
     setState(s => ({ ...s, user: null }))
   }, [])
 

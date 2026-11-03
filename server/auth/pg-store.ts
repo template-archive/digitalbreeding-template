@@ -47,7 +47,15 @@ export function createPgStore(databaseUrl: string, scope: 'production' | 'previe
       const r = rows[0]
       return r ? { email: String(r.email), codeHash: String(r.code_hash), expiresAt: date(r.expires_at), attempts: Number(r.attempts), sentAt: date(r.sent_at) } : null
     },
-    async addCodeAttempt(email) { await query('UPDATE hub_login_codes SET attempts = attempts + 1 WHERE scope=$1 AND email=$2', [scope, email]) },
+    async consumeAttempt(email, codeHash, at, maxAttempts) {
+      // 확인과 증가를 한 문장으로: 동시에 들어온 추측도 maxAttempts를 넘지 못한다.
+      const rows = await query(
+        'UPDATE hub_login_codes SET attempts = attempts + CASE WHEN code_hash = $3 THEN 0 ELSE 1 END WHERE scope=$1 AND email=$2 AND attempts < $5 AND expires_at > $4 RETURNING (code_hash = $3) AS matched',
+        [scope, email, codeHash, at.toISOString(), maxAttempts],
+      )
+      if (!rows[0]) return 'invalid'
+      return rows[0].matched === true || rows[0].matched === 't' ? 'match' : 'mismatch'
+    },
     async deleteCode(email) { await query('DELETE FROM hub_login_codes WHERE scope=$1 AND email=$2', [scope, email]) },
     async findUser(email) {
       const rows = await query('SELECT id, name, email FROM hub_users WHERE scope=$1 AND email=$2', [scope, email])

@@ -26,7 +26,14 @@ export function createMemoryStore(now: () => Date): AuthStore {
     },
     async putCode(code) { codes.set(code.email, { ...code }) },
     async getCode(email) { const c = codes.get(email); return c ? { ...c } : null },
-    async addCodeAttempt(email) { const c = codes.get(email); if (c) c.attempts += 1 },
+    async consumeAttempt(email, codeHash, at, maxAttempts) {
+      // 읽기와 증가 사이에 await가 없어 한 번에 처리된다(Postgres는 UPDATE … RETURNING 한 문장).
+      const c = codes.get(email)
+      if (!c || c.expiresAt.getTime() <= at.getTime() || c.attempts >= maxAttempts) return 'invalid'
+      if (c.codeHash === codeHash) return 'match'
+      c.attempts += 1
+      return 'mismatch'
+    },
     async deleteCode(email) { codes.delete(email) },
     async findUser(email) { const u = users.get(email); return u ? { ...u } : null },
     async createUser(email, name) {

@@ -57,7 +57,11 @@ function fakeAuth(state) {
       return json(200, { user: USER })
     }
     if (action === 'name') return state.nameStatus === 401 ? json(401, { error: '로그인이 필요합니다.' }) : json(200, { user: { ...USER, name: body.name } })
-    if (action === 'logout') { state.signedIn = false; return json(200, { ok: true }) }
+    if (action === 'logout') {
+      if (state.logoutStatus === 503) return json(503, { error: '로그인 서버에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.' })
+      state.signedIn = false
+      return json(200, { ok: true })
+    }
     return json(404, { error: 'not found' })
   }
 }
@@ -146,6 +150,24 @@ async function keyboard(browser, base) {
     await page.locator('[data-auth-dialog]').waitFor({ state: 'detached' })
     if (!(await page.evaluate(() => document.activeElement?.hasAttribute('data-auth-login')))) fail('keyboard', 'Esc로 닫은 뒤 포커스가 「로그인」으로 돌아오지 않음')
 
+    // 코드를 받은 뒤 창을 닫았다가 다시 열면 코드 단계가 그대로여야 한다(메일로 받은 코드를 넣을 곳이 사라지면 안 됨)
+    await login.click()
+    const dialog = page.locator('[data-auth-dialog]')
+    await dialog.locator('input[type="email"]').fill('kim@example.test')
+    await dialog.getByRole('button', { name: '코드 받기' }).click()
+    await dialog.locator('[data-auth-step="code"]').waitFor()
+    await page.keyboard.press('Escape')
+    await dialog.waitFor({ state: 'detached' })
+    await login.click()
+    await dialog.waitFor()
+    if (!(await dialog.locator('[data-auth-step="code"]').count())) fail('reopen', '코드를 받은 뒤 창을 다시 열면 코드 단계가 사라짐')
+    else {
+      await dialog.getByRole('button', { name: '주소 바꾸기' }).click()
+      await dialog.locator('[data-auth-step="email"]').waitFor()
+    }
+    await page.keyboard.press('Escape')
+    await dialog.waitFor({ state: 'detached' })
+
     // 세션 만료: 로그인 상태에서 이름 저장이 401이면 로그아웃 상태 + 로그인 창
     state.signedIn = true
     await page.reload()
@@ -156,6 +178,17 @@ async function keyboard(browser, base) {
     await visible(page, '[data-auth-account="signed-in"]').getByRole('button', { name: '저장' }).click()
     await page.locator('[data-auth-dialog]').waitFor({ timeout: 5000 })
     if (!(await page.locator('[data-auth-account="signed-out"]').count())) fail('session-expired', '401 뒤에도 로그인 상태로 보임')
+
+    // 로그아웃 실패: 세션이 남아 있으므로 로그인 상태를 유지하고 오류를 보인다(공용 PC에서 로그아웃된 줄 아는 일 방지)
+    await page.keyboard.press('Escape')
+    state.signedIn = true
+    state.logoutStatus = 503
+    await page.reload()
+    await visible(page, '[data-auth-account="signed-in"]').waitFor()
+    await visible(page, '[data-auth-account="signed-in"]').getByRole('button', { name: '로그아웃' }).click()
+    await page.waitForTimeout(500)
+    if (!(await page.locator('[data-auth-account="signed-in"]').count())) fail('logout-failure', '로그아웃이 실패했는데 로그아웃 상태로 보임')
+    if (!(await page.locator('[data-auth-account] [role="alert"]').count())) fail('logout-failure', '로그아웃 실패 안내가 없음')
   } catch (error) {
     fail('keyboard', `흐름 중단: ${error.message.split('\n')[0]}`)
   }

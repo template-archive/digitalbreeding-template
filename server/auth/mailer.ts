@@ -59,7 +59,8 @@ export function createSmtpMailer(settings: SmtpSettings, transport?: Transport, 
   return {
     async sendLoginCode(to, code, hubUrl) {
       const mail = loginCodeMail(code, hubUrl)
-      await withTimeout(sender.sendMail({ from: `"${settings.fromName}" <${settings.from}>`, to, ...mail }), timeoutMs)
+      // 주소는 객체로 넘긴다. 문자열이면 nodemailer가 주소 목록으로 다시 해석한다.
+      await withTimeout(sender.sendMail({ from: { name: settings.fromName, address: settings.from }, to: { name: '', address: to }, ...mail }), timeoutMs)
     },
   }
 }

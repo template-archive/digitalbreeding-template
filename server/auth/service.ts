@@ -1,7 +1,7 @@
 import { HttpError } from '../http.ts'
 import {
   CODE_MAX_ATTEMPTS, CODE_TTL_MS, MSG_CODE_FAILED, MSG_LOGIN_REQUIRED, MSG_RATE, MSG_SEND_FAILED, RESEND_SECONDS,
-  codeMatches, generateCode, hashCode, hashToken, isAllowedEmail, isTokenShape, newSessionToken,
+  generateCode, hashCode, hashToken, isAllowedEmail, isTokenShape, newSessionToken,
   normalizeCode, normalizeEmail, sessionStatus, validateName,
 } from './domain.ts'
 import type { Mailer } from './mailer.ts'
@@ -74,12 +74,8 @@ export function createAuthService(deps: { store: AuthStore; mailer: Mailer; allo
       const email = normalizeEmail(raw)
       const code = normalizeCode(rawCode)
       if (!code || !isAllowedEmail(email, allowedDomains)) throw failed()
-      const row = await store.getCode(email)
-      if (!row || row.expiresAt.getTime() <= now().getTime() || row.attempts >= CODE_MAX_ATTEMPTS) throw failed()
-      if (!codeMatches(secret, email, code, row.codeHash)) {
-        await store.addCodeAttempt(email)
-        throw failed()
-      }
+      // 없음·만료·5회 초과·틀림을 한 번의 원자적 동작으로 판정한다(동시 추측이 제한을 넘지 못하게).
+      if (await store.consumeAttempt(email, hashCode(secret, email, code), now(), CODE_MAX_ATTEMPTS) !== 'match') throw failed()
       let user = await store.findUser(email)
       if (!user) {
         // 이름을 묻는 동안 코드는 그대로 둔다. 이름과 함께 다시 보내면 그때 소비한다.

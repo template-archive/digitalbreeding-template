@@ -11,18 +11,31 @@ const tokenHash = () => randomBytes(32).toString('hex')
 
 function contract(name, make, options = {}) {
   test(name + ': a new code replaces the previous one and attempts count up', options, async () => {
-    const s = await make(), email = unique()
+    const s = await make(), email = unique(), now = new Date()
     assert.equal(await s.getCode(email), null)
-    await s.putCode({ email, codeHash: 'h1', expiresAt: later(), attempts: 0, sentAt: new Date() })
-    await s.addCodeAttempt(email)
-    await s.putCode({ email, codeHash: 'h2', expiresAt: later(), attempts: 0, sentAt: new Date() })
-    await s.addCodeAttempt(email)
+    assert.equal(await s.consumeAttempt(email, 'h1', now, 5), 'invalid')
+    await s.putCode({ email, codeHash: 'h1', expiresAt: later(), attempts: 0, sentAt: now })
+    assert.equal(await s.consumeAttempt(email, 'x', now, 5), 'mismatch')
+    await s.putCode({ email, codeHash: 'h2', expiresAt: later(), attempts: 0, sentAt: now })
+    assert.equal(await s.consumeAttempt(email, 'h1', now, 5), 'mismatch')
     const row = await s.getCode(email)
     assert.equal(row.codeHash, 'h2')
     assert.equal(row.attempts, 1)
     assert.ok(row.expiresAt instanceof Date)
+    assert.equal(await s.consumeAttempt(email, 'h2', now, 5), 'match')
+    assert.equal((await s.getCode(email)).attempts, 1)
     await s.deleteCode(email)
     assert.equal(await s.getCode(email), null)
+  })
+
+  test(name + ': attempts stop at the limit and expired codes are invalid', options, async () => {
+    const s = await make(), email = unique(), now = new Date()
+    await s.putCode({ email, codeHash: 'h', expiresAt: later(), attempts: 0, sentAt: now })
+    for (let i = 0; i < 5; i++) assert.equal(await s.consumeAttempt(email, 'x', now, 5), 'mismatch')
+    assert.equal(await s.consumeAttempt(email, 'h', now, 5), 'invalid')
+    const old = unique()
+    await s.putCode({ email: old, codeHash: 'h', expiresAt: new Date(now.getTime() - 1000), attempts: 0, sentAt: now })
+    assert.equal(await s.consumeAttempt(old, 'h', now, 5), 'invalid')
   })
 
   test(name + ': users are unique per email and sessions join their user', options, async () => {

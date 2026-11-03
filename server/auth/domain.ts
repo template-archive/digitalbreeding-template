@@ -22,7 +22,8 @@ export const MSG_NAME = '표시 이름을 1–20자로 입력해 주세요.'
 export const MSG_LOGIN_REQUIRED = '로그인이 필요합니다.'
 export const MSG_UNAVAILABLE = '로그인 서버에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.'
 
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+// 평범한 주소 모양만 받는다. 괄호·따옴표·쉼표·꺾쇠가 섞이면 메일 서버가 다른 형태로 고쳐 써서 주소별 발송 한도를 우회할 수 있다.
+const EMAIL = /^[a-z0-9._%+'-]+@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/
 
 export function normalizeEmail(value: unknown): string {
   if (typeof value !== 'string') throw new HttpError(400, MSG_EMAIL_FORMAT)

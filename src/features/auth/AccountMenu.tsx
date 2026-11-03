@@ -13,6 +13,7 @@ export function AccountMenu({ rowClassName, onBeforeLogin }: { rowClassName: str
   const [draft, setDraft] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [logoutError, setLogoutError] = useState('')
 
   if (!ready) return <div data-auth-account="loading" className="min-h-10" aria-hidden="true" />
 
@@ -30,6 +31,18 @@ export function AccountMenu({ rowClassName, onBeforeLogin }: { rowClassName: str
         </button>
       </div>
     )
+  }
+
+  const signOut = async () => {
+    setBusy(true)
+    setLogoutError('')
+    try {
+      await logout()
+    } catch (e) {
+      setLogoutError(`로그아웃하지 못했습니다. ${e instanceof AuthRequestError ? e.message : '잠시 후 다시 시도해 주세요.'}`)
+    } finally {
+      setBusy(false)
+    }
   }
 
   const save = async (event: FormEvent) => {
@@ -67,10 +80,11 @@ export function AccountMenu({ rowClassName, onBeforeLogin }: { rowClassName: str
           <span className="min-w-0 truncate">{user.name}</span>
         </button>
       )}
-      <button type="button" className={rowClassName} onClick={() => void logout()}>
+      <button type="button" className={rowClassName} disabled={busy} onClick={() => void signOut()}>
         <LogOut size={16} aria-hidden="true" className="text-muted" />
         로그아웃
       </button>
+      {logoutError && <p role="alert" className="px-3 text-xs leading-relaxed text-negative">{logoutError}</p>}
     </div>
   )
 }

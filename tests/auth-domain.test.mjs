@@ -70,3 +70,12 @@ test('session tokens are 43-char base64url and only their hash is stored', () =>
   assert.equal(isTokenShape('x'.repeat(43) + '!'), false)
   assert.equal(isTokenShape(''), false)
 })
+
+// nodemailer는 받는 주소 문자열을 주소 목록으로 해석한다. 괄호·따옴표·쉼표·꺾쇠가 섞인 변형이 같은 메일함으로 가면서
+// 주소별 발송 한도 키는 달라지므로, 평범한 주소 모양만 받는다(최종 검토 Important 1).
+test('address variants that mail servers would rewrite are rejected', () => {
+  for (const bad of ['victim(1)@example.test', '"victim"@example.test', 'a,victim@example.test', '<victim>@example.test', 'a;b@example.test', 'victim@example.test>', 'a@exa_mple.test', 'a@-example.test', 'a@example..test'])
+    assert.throws(() => normalizeEmail(bad), e => e.status === 400, bad)
+  for (const ok of ['kim.lee@example.test', 'kim+tag@example.test', 'k_lee-2@mail.example.test', "o'brien@example.test"])
+    assert.equal(normalizeEmail(ok), ok)
+})

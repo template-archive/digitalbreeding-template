@@ -14,7 +14,12 @@ export interface AuthStore {
   /** 같은 주소의 이전 코드를 바꿔 쓴다 */
   putCode(code: LoginCode): Promise<void>
   getCode(email: string): Promise<LoginCode | null>
-  addCodeAttempt(email: string): Promise<void>
+  /**
+   * 코드 확인 한 번을 원자적으로 처리한다(동시 요청이 시도 제한을 넘지 못하게).
+   * 유효한 코드(만료 전·시도 maxAttempts 미만)가 없으면 'invalid', 해시가 같으면 'match'(시도를 세지 않음),
+   * 다르면 시도를 1 올리고 'mismatch'.
+   */
+  consumeAttempt(email: string, codeHash: string, now: Date, maxAttempts: number): Promise<'match' | 'mismatch' | 'invalid'>
   deleteCode(email: string): Promise<void>
   findUser(email: string): Promise<HubUser | null>
   /** 이미 있으면 기존 사용자를 돌려준다 */

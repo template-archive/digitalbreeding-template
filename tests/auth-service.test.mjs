@@ -170,3 +170,14 @@ test('rename requires a session; logout ends it', async () => {
   await service.logout(token)
   await service.logout(null)
 })
+
+// 서버리스는 요청이 동시에 처리된다. 시도 횟수 확인과 증가가 따로 일어나면 동시 추측이 5회 제한을 넘는다(최종 검토 Important 2).
+test('concurrent guesses cannot exceed five attempts on one code', async () => {
+  const { service, sendAndRead } = setup()
+  const code = await sendAndRead('race@example.test')
+  const wrong = n => String((Number(code) + n) % 1_000_000).padStart(6, '0')
+  const guesses = Array.from({ length: 20 }, (_, i) => (i === 9 ? code : wrong(i + 1)))
+  const results = await Promise.allSettled(guesses.map((guess, i) => service.verify({ email: 'race@example.test', code: guess, name: '김', ip: 'r' + i })))
+  assert.equal(results[9].status, 'rejected')
+  assert.ok(results.every(r => r.status === 'rejected'))
+})
