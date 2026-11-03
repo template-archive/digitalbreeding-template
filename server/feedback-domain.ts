@@ -1,10 +1,8 @@
 import { parseFeedback, type Anchor, type FeedbackData, type FeedbackLabel } from '../src/features/feedback/model.ts'
 import type { FeedbackAction } from '../src/features/feedback/protocol.ts'
+import { HttpError } from './http.ts'
 
-export class FeedbackError extends Error {
-  readonly status: number
-  constructor(status: number, message: string) { super(message); this.status = status }
-}
+export class FeedbackError extends HttpError {}
 const object = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
 const uuid = (v: unknown): v is string => typeof v === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v)
 const label = (v: unknown): v is FeedbackLabel => v === 'fix' || v === 'question' || v === 'idea'

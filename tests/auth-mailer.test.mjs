@@ -32,9 +32,9 @@ test('smtp mailer sends one message with the hub sender name', async () => {
   const mailer = createSmtpMailer(readSmtpSettings({ SMTP_USER: 'hub@gmail.com', SMTP_PASS: 'x' }), { sendMail: async m => { sent.push(m) } })
   await mailer.sendLoginCode('a@example.test', '654321', 'https://hub.example.test')
   assert.equal(sent.length, 1)
-  assert.equal(sent[0].to, 'a@example.test')
-  assert.match(String(sent[0].from), /템플릿 허브/)
-  assert.match(String(sent[0].from), /hub@gmail\.com/)
+  // 문자열로 넘기면 nodemailer가 주소 목록으로 다시 해석하므로 주소 객체로 넘긴다.
+  assert.deepEqual(sent[0].to, { name: '', address: 'a@example.test' })
+  assert.deepEqual(sent[0].from, { name: '템플릿 허브', address: 'hub@gmail.com' })
   assert.equal(sent[0].subject, '[템플릿 허브] 로그인 코드 654321')
   assert.match(sent[0].text, /654321/)
   assert.match(sent[0].html, /654321/)

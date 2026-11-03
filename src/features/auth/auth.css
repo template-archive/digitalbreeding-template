@@ -1,0 +1,14 @@
+/* 로그인 창 입력 칸(상자·머리·닫기는 갤러리 대화 상자 .template-resource-* 를 그대로 쓴다). 색은 토큰만 쓰므로 다크 모드는 자동. */
+.auth-field { display: flex; flex-direction: column; gap: 6px; }
+.auth-field + .auth-field { margin-top: 14px; }
+.auth-field label { font-size: 13px; font-weight: 600; color: var(--color-text); }
+.auth-field input { min-height: 44px; width: 100%; padding: 0 12px; border: 1px solid var(--color-border); border-radius: 6px; background: var(--color-surface); color: var(--color-text); font-size: 15px; }
+.auth-field input:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 1px; }
+.auth-field input[inputmode="numeric"] { letter-spacing: .12em; font-variant-numeric: tabular-nums; }
+.auth-hint { margin: 0; color: var(--color-text-muted); font-size: 12px; line-height: 1.5; }
+.auth-notice { margin: 0 0 14px; color: var(--color-text-muted); font-size: 13px; line-height: 1.55; }
+.auth-error { margin: 10px 0 0; color: var(--color-negative); font-size: 13px; line-height: 1.5; }
+.auth-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.auth-actions > .auth-submit { flex: 1 1 100%; }
+.auth-account-form { display: flex; flex-direction: column; gap: 8px; padding: 4px 0; }
+.auth-account-form input { min-height: 40px; width: 100%; padding: 0 10px; border: 1px solid var(--color-border); border-radius: 6px; background: var(--color-surface); color: var(--color-text); font-size: 14px; }
