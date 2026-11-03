@@ -5,6 +5,7 @@ import { setThemeOverride, useThemeMode } from '@/design-system/themeMode'
 import { templatePaths, type TemplateListState } from './registry'
 import { countByCategory, groupTemplates } from './order'
 import { libraryHref, templateHref } from './router'
+import { AccountMenu } from '@/features/auth/AccountMenu'
 
 export interface ShellNavProps {
   list: TemplateListState
@@ -201,7 +202,8 @@ export function Sidebar(props: ShellNavProps) {
       <nav ref={navRef} aria-label="템플릿" className="min-h-0 flex-1 overflow-y-auto px-4 pb-6">
         <NavTree {...props} />
       </nav>
-      <div className="mx-4 border-t border-border py-4">
+      <div className="mx-4 flex flex-col gap-1 border-t border-border py-4">
+        <AccountMenu rowClassName={cn(ROW, ROW_HOVER, 'w-full text-[13px]')} />
         <ThemeToggle />
       </div>
     </aside>
@@ -270,7 +272,8 @@ function MenuSheet({ onClose, ...nav }: ShellNavProps & { onClose: () => void })
       <nav ref={navRef} aria-label="템플릿" className="min-h-0 flex-1 overflow-y-auto px-4 py-5">
         <NavTree {...nav} onNavigate={onClose} />
       </nav>
-      <div className="mx-4 border-t border-border py-4">
+      <div className="mx-4 flex flex-col gap-1 border-t border-border py-4">
+        <AccountMenu rowClassName={cn(ROW, ROW_HOVER, 'w-full text-[13px]')} onBeforeLogin={onClose} />
         <ThemeToggle />
       </div>
     </div>

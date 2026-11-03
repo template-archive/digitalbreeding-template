@@ -69,10 +69,15 @@ export function AuthProvider({ enabled, children }: { enabled: boolean; children
     setState(s => ({ ...s, user: null }))
   }, [])
 
+  // 모달이 열려 있는 동안은 창 밖에 포커스를 줄 수 없으므로, 창이 닫힌(언마운트된) 뒤 연 버튼으로 돌려준다.
+  const wasOpen = useRef(false)
+  useEffect(() => {
+    if (wasOpen.current && !open && opener.current?.isConnected) opener.current.focus()
+    wasOpen.current = open
+  }, [open])
   const close = useCallback(() => {
     setOpen(false)
     pending.current = undefined
-    opener.current?.focus()
   }, [])
   const success = useCallback((user: AuthUser) => {
     setState(s => ({ ...s, user, available: true }))
